@@ -1,177 +1,334 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Triblox Studio Fixed ResizeObserver</title>
-<style>
-html, body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    overflow: hidden;
-    font-family: Arial, sans-serif;
-    background-color: #f2f2f2;
-}
-#studio-container {
-    display: grid;
-    grid-template-columns: 150px 1fr 250px;
-    grid-template-rows: 50px 1fr 80px;
-    grid-template-areas:
-        "topbar topbar topbar"
-        "toolbar canvas rightpanels"
-        "output output output";
-    height: 100%;
-    width: 100%;
-}
-#topbar { grid-area: topbar; background: #232323; color: white; display: flex; align-items: center; padding: 0 10px; gap: 5px; }
-#topbar button.selected { background: #777; }
-#toolbar { grid-area: toolbar; background: #333; display: flex; flex-direction: column; padding: 10px; gap: 10px; color: white; position: relative; }
-#rightpanels { grid-area: rightpanels; display: flex; flex-direction: column; gap: 10px; padding: 10px; background: #eee; position: relative; }
-#object-explorer, #properties-editor, #toolbar, #output { border: 1px solid #aaa; background: #ddd; padding: 5px; overflow-y: auto; position: relative; }
-.close-btn { position: absolute; top: 2px; right: 5px; cursor: pointer; font-weight: bold; }
-#output { grid-area: output; background: #1e1e1e; color: #0f0; font-family: monospace; padding: 2px; font-size: 12px; overflow-y: auto; }
-#canvas-container { grid-area: canvas; position: relative; background: #aaa; }
-canvas { display: block; width: 100%; height: 100%; }
-button { padding: 5px; background: #555; color: white; border: none; cursor: pointer; }
-button:hover { background: #777; }
-</style>
+  <meta charset="UTF-8">
+  <title>Sign Up - Triblox</title>
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,700" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background: url('/signupbg.png') no-repeat center center fixed;
+      background-size: cover;
+      color: #333;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.35);
+      z-index: -1;
+    }
+
+    /* Navbar */
+    .navbar {
+      background-color: rgba(44,44,44,0.9);
+      color: #fff;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 10;
+    }
+
+    .navbar .logo {
+      font-size: 24px;
+      font-weight: bold;
+      color: #fff;
+      text-decoration: none;
+    }
+
+    .navbar ul {
+      list-style: none;
+      display: flex;
+      margin: 0;
+      padding: 0;
+    }
+
+    .navbar ul li {
+      margin-left: 20px;
+    }
+
+    .navbar ul li a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .navbar ul li a:hover {
+      text-decoration: underline;
+    }
+
+    /* Signup container */
+    .signup-container {
+      max-width: 400px;
+      margin: 120px auto 60px auto;
+      background-color: rgba(255,255,255,0.95);
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+      text-align: center;
+    }
+
+    .signup-container h2 {
+      margin-bottom: 20px;
+    }
+
+    .signup-container label {
+      display: block;
+      margin: 10px 0 5px 0;
+      font-weight: 500;
+      text-align: left;
+    }
+
+    .signup-container input,
+    .signup-container select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      margin-bottom: 15px;
+      font-size: 14px;
+    }
+
+    .signup-container input:focus,
+    .signup-container select:focus {
+      border-color: #17a2b8;
+      outline: none;
+    }
+
+    /* Gender icons style */
+    .gender-container {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .gender-option {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      text-align: center;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 14px;
+    }
+
+    .gender-option img {
+      width: 30px;
+      height: 30px;
+      margin-bottom: 5px;
+    }
+
+    .gender-option.selected {
+      border-color: #17a2b8;
+      background-color: #e0f7fa;
+    }
+
+    .signup-container button {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      background-color: #17a2b8;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      border-radius: 4px;
+      font-weight: bold;
+      transition: background 0.2s;
+    }
+
+    .signup-container button:hover {
+      background-color: #138496;
+    }
+
+    .signup-container .terms {
+      font-size: 12px;
+      color: #666;
+      margin-top: 10px;
+    }
+
+    .signup-container .terms a {
+      color: #17a2b8;
+      text-decoration: none;
+    }
+
+    .signup-container .terms a:hover {
+      text-decoration: underline;
+    }
+
+    /* Age verification popup */
+    .age-popup {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 20;
+    }
+
+    .age-popup .popup-content {
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 8px;
+      text-align: center;
+      max-width: 350px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+    }
+
+    .age-popup button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .age-popup button#ageYes {
+      background-color: #17a2b8;
+      color: #fff;
+      margin-right: 10px;
+    }
+
+    .age-popup button#ageYes:hover {
+      background-color: #138496;
+    }
+
+    .age-popup button#ageNo {
+      background-color: #ccc;
+      color: #333;
+    }
+
+    .age-popup button#ageNo:hover {
+      background-color: #aaa;
+    }
+  </style>
 </head>
 <body>
 
-<div id="studio-container">
-    <div id="topbar">
-        <button data-panel="toolbar" class="selected">Toolbar</button>
-        <button data-panel="rightpanels" class="selected">Right Panel</button>
-        <button data-panel="output" class="selected">Output</button>
-        <button data-panel="extra">Extra</button>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a href="#" class="logo">Triblox</a>
+    <ul>
+      <li><a href="#">Games</a></li>
+      <li><a href="#">Catalog</a></li>
+      <li><a href="#">Robux</a></li>
+      <li><a href="#">Create</a></li>
+      <li><a href="#">Login</a></li>
+      <li><a href="#">Sign Up</a></li>
+    </ul>
+  </nav>
+
+  <!-- Signup Form -->
+  <div class="signup-container">
+    <h2>Create Your Account</h2>
+    <form id="signupForm">
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username" placeholder="Enter username" required>
+
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" placeholder="Enter password" required>
+
+      <label for="confirm-password">Confirm Password</label>
+      <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm password" required>
+
+      <label for="birthdate">Birthdate</label>
+      <input type="date" id="birthdate" name="birthdate" required>
+
+      <label>Gender</label>
+      <div class="gender-container">
+        <div class="gender-option" data-value="male">
+          <img src="https://i.imgur.com/6Y2eKjF.png" alt="Male Icon">
+          Male
+        </div>
+        <div class="gender-option" data-value="female">
+          <img src="https://i.imgur.com/r3Hn1cH.png" alt="Female Icon">
+          Female
+        </div>
+        <div class="gender-option" data-value="other">
+          <img src="https://i.imgur.com/7b0WqM7.png" alt="Other Icon">
+          Other
+        </div>
+      </div>
+      <input type="hidden" id="gender" name="gender">
+
+      <button type="submit">Sign Up</button>
+
+      <p class="terms">By signing up, you agree to the <a href="#">Terms of Use</a> and <a href="#">Privacy Policy</a>.</p>
+    </form>
+  </div>
+
+  <!-- Age Verification Popup -->
+  <div class="age-popup" id="agePopup">
+    <div class="popup-content">
+      <h3>Are you 5 or older?</h3>
+      <p>Triblox requires users to be at least 5 years old to sign up.</p>
+      <button id="ageYes">Yes</button>
+      <button id="ageNo">No</button>
     </div>
+  </div>
 
-    <div id="toolbar">
-        <span class="close-btn">×</span>
-        <button id="add-cube">Cube</button>
-        <button id="add-sphere">Sphere</button>
-    </div>
+  <script>
+    const form = document.getElementById('signupForm');
+    const agePopup = document.getElementById('agePopup');
+    const ageYes = document.getElementById('ageYes');
+    const ageNo = document.getElementById('ageNo');
 
-    <div id="canvas-container">
-        <canvas id="sandbox"></canvas>
-    </div>
+    const genderOptions = document.querySelectorAll('.gender-option');
+    const genderInput = document.getElementById('gender');
 
-    <div id="rightpanels">
-        <span class="close-btn">×</span>
-        <div id="object-explorer">Object Explorer</div>
-        <div id="properties-editor">Properties Editor</div>
-    </div>
-
-    <div id="output">Output Console:</div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/three@0.152.0/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.152.0/examples/js/controls/OrbitControls.js"></script>
-<script>
-// ----------------- 3D Setup -----------------
-const canvas = document.getElementById('sandbox');
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0xf2f2f2);
-const camera = new THREE.PerspectiveCamera(75,1,0.1,1000);
-camera.position.set(0,5,10);
-const renderer = new THREE.WebGLRenderer({canvas});
-renderer.setSize(canvas.offsetWidth, canvas.offsetHeight);
-
-const controls = new THREE.OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;
-
-scene.add(new THREE.GridHelper(50,50));
-scene.add(new THREE.AmbientLight(0xffffff,0.6));
-const dirLight = new THREE.DirectionalLight(0xffffff,0.8);
-dirLight.position.set(10,10,10);
-scene.add(dirLight);
-
-const geometry = new THREE.BoxGeometry();
-const material = new THREE.MeshStandardMaterial({color:0x00a2ff});
-const cube = new THREE.Mesh(geometry, material);
-scene.add(cube);
-
-let moveForward=false, moveBackward=false, moveLeft=false, moveRight=false;
-let velocity = new THREE.Vector3();
-document.addEventListener('keydown', e=>{
-    if(e.code==='KeyW') moveForward=true;
-    if(e.code==='KeyS') moveBackward=true;
-    if(e.code==='KeyA') moveLeft=true;
-    if(e.code==='KeyD') moveRight=true;
-});
-document.addEventListener('keyup', e=>{
-    if(e.code==='KeyW') moveForward=false;
-    if(e.code==='KeyS') moveBackward=false;
-    if(e.code==='KeyA') moveLeft=false;
-    if(e.code==='KeyD') moveRight=false;
-});
-
-function animate(){
-    requestAnimationFrame(animate);
-    velocity.set(0,0,0);
-    if(moveForward) velocity.z-=0.1;
-    if(moveBackward) velocity.z+=0.1;
-    if(moveLeft) velocity.x-=0.1;
-    if(moveRight) velocity.x+=0.1;
-    camera.position.add(velocity);
-    controls.update();
-    renderer.render(scene,camera);
-}
-animate();
-
-// ----------------- Panels Toggle -----------------
-const buttons = document.querySelectorAll('#topbar button');
-buttons.forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-        const panel = document.getElementById(btn.dataset.panel);
-        if(!panel) return;
-        const visible = panel.style.display !== 'none';
-        panel.style.display = visible ? 'none':'block';
-        btn.classList.toggle('selected', !visible);
+    // Gender selection
+    genderOptions.forEach(option => {
+      option.addEventListener('click', () => {
+        genderOptions.forEach(o => o.classList.remove('selected'));
+        option.classList.add('selected');
+        genderInput.value = option.getAttribute('data-value');
+      });
     });
-});
 
-// Close buttons
-document.querySelectorAll('.close-btn').forEach(btn=>{
-    btn.addEventListener('click', e=>{
-        const parent = e.target.parentElement;
-        parent.style.display='none';
-        const panelBtn = [...buttons].find(b=>b.dataset.panel===parent.id);
-        if(panelBtn) panelBtn.classList.remove('selected');
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const password = form.password.value;
+      const confirmPassword = form['confirm-password'].value;
+
+      if(password !== confirmPassword) {
+        alert("Passwords do not match!");
+        return;
+      }
+
+      // Show age verification popup
+      agePopup.style.display = 'flex';
     });
-});
 
-// ----------------- ResizeObserver Fix -----------------
-const container = document.getElementById('canvas-container');
-function resizeCanvas(){
-    const width = container.clientWidth;
-    const height = container.clientHeight;
-    if(width===0 || height===0) return;
-    camera.aspect = width / height;
-    camera.updateProjectionMatrix();
-    renderer.setSize(width, height);
-}
-// Observe container changes (panels toggle, window resize, etc.)
-const ro = new ResizeObserver(resizeCanvas);
-ro.observe(container);
-window.addEventListener('load', resizeCanvas);
+    ageYes.addEventListener('click', () => {
+      agePopup.style.display = 'none';
+      alert(`Account created for ${form.username.value}!`);
+      form.reset();
+      genderOptions.forEach(o => o.classList.remove('selected'));
+    });
 
-// ----------------- Toolbar Buttons -----------------
-document.getElementById('add-cube').addEventListener('click', ()=>{
-    const geo = new THREE.BoxGeometry();
-    const mat = new THREE.MeshStandardMaterial({color:0x00a2ff});
-    const c = new THREE.Mesh(geo, mat);
-    c.position.set(Math.random()*5,0.5,Math.random()*5);
-    scene.add(c);
-});
-document.getElementById('add-sphere').addEventListener('click', ()=>{
-    const geo = new THREE.SphereGeometry(0.5,32,32);
-    const mat = new THREE.MeshStandardMaterial({color:0xffaa00});
-    const s = new THREE.Mesh(geo, mat);
-    s.position.set(Math.random()*5,0.5,Math.random()*5);
-    scene.add(s);
-});
-</script>
+    ageNo.addEventListener('click', () => {
+      agePopup.style.display = 'none';
+      alert("Sorry, you must be at least 5 to sign up.");
+    });
+  </script>
 
 </body>
 </html>
