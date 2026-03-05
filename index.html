@@ -113,6 +113,28 @@ scene.background = texture;
             if(e.code === 'KeyA') moveLeft = false;
             if(e.code === 'KeyD') moveRight = false;
         });
+        camera.rotation.order = "YXZ"; // Recommended for first person rotation
+const rotationSpeed = 0.05;
+
+function animate() {
+    requestAnimationFrame(animate);
+
+    if (pressedKeys['ArrowLeft']) {
+        camera.rotation.y += rotationSpeed; // Rotate left
+    }
+    if (pressedKeys['ArrowRight']) {
+        camera.rotation.y -= rotationSpeed; // Rotate right
+    }
+    if (pressedKeys['ArrowUp']) {
+        camera.rotation.x += rotationSpeed; // Rotate up (adjust sign if needed for preference)
+    }
+    if (pressedKeys['ArrowDown']) {
+        camera.rotation.x -= rotationSpeed; // Rotate down (adjust sign if needed for preference)
+    }
+
+    renderer.render(scene, camera);
+}
+
 
         function animate() {
             requestAnimationFrame(animate);
@@ -135,7 +157,7 @@ scene.background = texture;
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / (window.innerHeight - 50);
             camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight - 50);
+            renderer.setSize(window.innerWidth, window.innerHeight - 40);
         });
     </script>
 </body>
