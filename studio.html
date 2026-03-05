@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Triblox Studio</title>
+    <style>
+        /* Basic 2016-style UI */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            color: #333;
+            overflow: hidden;
+        }
+
+        /* Topbar */
+        .topbar {
+            height: 50px;
+            background-color: #232323;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            color: white;
+        }
+
+        .logo {
+            font-weight: bold;
+            font-size: 20px;
+            color: #e2231a;
+            margin-right: 30px;
+        }
+
+        .nav a {
+            color: #ccc;
+            text-decoration: none;
+            margin-right: 20px;
+            font-size: 14px;
+        }
+
+        .nav a:hover { color: white; }
+
+        /* 3D canvas fills remaining space */
+        #sandbox {
+            display: block;
+            width: 100%;
+            height: calc(100vh - 50px);
+        }
+    </style>
+</head>
+<body>
+    <canvas id="sandbox"></canvas>
+
+    <!-- Three.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.152.0/build/three.min.js"></script>
+    <script>
+        // Basic Three.js 3D sandbox
+        const canvas = document.getElementById('sandbox');
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x87CEEB);
+        const loader = new THREE.CubeTextureLoader();
+const texture = loader.load([
+  '/sky/null_plainsky512_rt.jpg', '/sky/null_plainsky512_lf.jpg', // right, left
+  '/sky/null_plainsky512_up.jpg', '/sky/null_plainsky512_dn.jpg', // top, bottom
+  '/sky/null_plainsky512_bk.jpg', '/sky/null_plainsky512_ft.jpg'  // back, front
+]);
+scene.background = texture;
+
+
+        const camera = new THREE.PerspectiveCamera(
+            75, 
+            window.innerWidth / (window.innerHeight - 60), 
+            0.1, 
+            1000
+        );
+        camera.position.set(0, 5, 10);
+
+        const renderer = new THREE.WebGLRenderer({canvas});
+        renderer.setSize(window.innerWidth, window.innerHeight - 60);
+
+        // Add a grid (like Roblox Studio)
+        const gridHelper = new THREE.GridHelper(50, 50);
+        scene.add(gridHelper);
+
+        // Add a cube
+        const geometry = new THREE.SphereGeometry();
+        const material = new THREE.MeshStandardMaterial({color: 0x00a2ff});
+        const sphere = new THREE.Mesh(geometry, material);
+        scene.add(sphere);
+        sphere.position.set(0, 1, 0)
+
+        // Add simple light
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambientLight);
+
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        directionalLight.position.set(10, 10, 10);
+        scene.add(directionalLight);
+
+        // Basic camera controls (WASD + mouse)
+        let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
+        let velocity = new THREE.Vector3();
+        let direction = new THREE.Vector3();
+
+        document.addEventListener('keydown', (e) => {
+            if(e.code === 'KeyW') moveForward = true;
+            if(e.code === 'KeyS') moveBackward = true;
+            if(e.code === 'KeyA') moveLeft = true;
+            if(e.code === 'KeyD') moveRight = true;
+        });
+        document.addEventListener('keyup', (e) => {
+            if(e.code === 'KeyW') moveForward = false;
+            if(e.code === 'KeyS') moveBackward = false;
+            if(e.code === 'KeyA') moveLeft = false;
+            if(e.code === 'KeyD') moveRight = false;
+        });
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Simple movement
+            velocity.set(0,0,0);
+            if(moveForward) velocity.z -= 0.1;
+            if(moveBackward) velocity.z += 0.1;
+            if(moveLeft) velocity.x -= 0.1;
+            if(moveRight) velocity.x += 0.1;
+
+            camera.position.add(velocity);
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / (window.innerHeight - 50);
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight - 50);
+        });
+    </script>
+</body>
+</html>
